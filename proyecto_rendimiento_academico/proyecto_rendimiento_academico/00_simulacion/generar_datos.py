@@ -57,7 +57,16 @@ def simular_estudiantes(n, semilla):
        - asistencia > 0.85  → 'alta'
     8. Retornar un DataFrame de pandas con todas las columnas
     """
-    pass  # TODO: reemplazar con la implementación
+    # Ejemplo simple (NO es el código del proyecto):
+            import numpy as np
+            
+            np.random.seed(10)
+            print(np.random.normal(0, 1, 3))  # → siempre los mismos 3 números
+            
+            np.random.seed(10)
+            print(np.random.normal(0, 1, 3))  # → exactamente los mismos
+            "Paso 1: fijar semilla en simular_estudiantes"
+
 
 
 # ─────────────────────────────────────────────
