@@ -58,24 +58,20 @@ def simular_estudiantes(n, semilla):
     8. Retornar un DataFrame de pandas con todas las columnas
     """
     # Ejemplo simple (NO es el código del proyecto):
-            "Paso 1: fijar semilla en simular_estudiantes"
+            # Paso 1: fijar semilla en simular_estudiantes"
             import numpy as np
             
             np.random.seed(semilla)
-            print(np.random.normal(0, 1, 3))  # → siempre los mismos 3 números
-            
-            np.random.seed(semilla)
-            print(np.random.normal(0, 1, 3))  # → exactamente los mismos
 
-            "Paso 2: Generar horas_estudio con distribución normal (media=15, std=5) → Limitar entre 0 y 30 con np.clip()"
+            # Paso 2: Generar horas_estudio con distribución normal (media=15, std=5) → Limitar entre 0 y 30 con np.clip()"
             # Ejemplo: edades de personas (NO es el proyecto)
             edades = np.random.normal(loc=30, scale=5, size=50)
             # Algunas pueden salir negativas o muy grandes → limitamos:
-            edades = np.clip(edades, 18, 65)  # mínimo 18, máximo 65
+            edades = np.clip(horas_estudio, 0, 30)  # mínimo 18, máximo 65
 
-            "Paso 3: Generar asistencia con distribución binomial (n=20 intentos, p=0.85) → Dividir entre 20 para obtener proporción 0..1"
+            # Paso 3: Generar asistencia con distribución binomial (n=20 intentos, p=0.85) → Dividir entre 20 para obtener proporción 0..1"
             # Ejemplo: de 10 preguntas con 70% de chance de acertar
-            respuestas = np.random.binomial(n=20, p=0.85, size=5)
+            respuestas = np.random.binomial(n=20, p=0.85, size=n)
             # → algo como [7, 8, 6, 9, 7]  (respuestas correctas por persona)
             proporcion = respuestas / 20   # → [0.7, 0.8, 0.6, 0.9, 0.7]
 # ─────────────────────────────────────────────
