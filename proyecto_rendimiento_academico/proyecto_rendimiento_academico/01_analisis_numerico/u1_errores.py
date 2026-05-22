@@ -26,89 +26,47 @@ FECHA     : [Fecha]
 """
 
 import numpy as np
-
+from math import floor, log10
 # ─────────────────────────────────────────────
 # TODO 1: Error absoluto
 # ─────────────────────────────────────────────
 def error_absoluto(valor_real, valor_aprox):
-    """
-    Calcula el error absoluto.
-    Fórmula: |valor_real - valor_aprox|
-
-    Ejemplo:
-        valor_real  = 3.14159
-        valor_aprox = 3.14
-        resultado   = 0.00159
-    """
-    pass  # TODO
-
-
+    return abs(valor_real-valor_aprox)
 # ─────────────────────────────────────────────
 # TODO 2: Error relativo
 # ─────────────────────────────────────────────
 def error_relativo(valor_real, valor_aprox):
-    """
-    Calcula el error relativo.
-    Fórmula: |valor_real - valor_aprox| / |valor_real|
-
-    CUIDADO: si valor_real == 0, retornar None (división por cero)
-    """
-    pass  # TODO
-
-
+    if valor_real == 0:
+        return None
+    return error_absoluto(valor_real, valor_aprox) / abs(valor_real) 
 # ─────────────────────────────────────────────
 # TODO 3: Error porcentual
 # ─────────────────────────────────────────────
 def error_porcentual(valor_real, valor_aprox):
-    """
-    Calcula el error porcentual.
-    Fórmula: error_relativo * 100
-
-    Llama a error_relativo() internamente.
-    """
-    pass  # TODO
-
-
+    er = error_relativo(valor_real, valor_aprox)
+    if er is None:
+       return None
+    return er * 100
 # ─────────────────────────────────────────────
 # TODO 4: Error de aproximación sucesiva
 # (para métodos iterativos donde no conocemos el valor real)
 # ─────────────────────────────────────────────
 def error_aproximacion(x_nuevo, x_anterior):
-    """
-    Calcula el error entre dos iteraciones consecutivas.
-    Usado en: bisección, Newton, Gauss-Seidel.
-    Fórmula: |x_nuevo - x_anterior| / |x_nuevo|
-
-    CUIDADO: si x_nuevo == 0, retornar abs(x_nuevo - x_anterior)
-    """
-    pass  # TODO
-
-
+    if x_nuevo == 0:
+        return None
+    return abs(x_nuevo - x_anterior)/ abs(x_nuevo)
 # ─────────────────────────────────────────────
 # TODO 5: Verificar criterio de parada
 # ─────────────────────────────────────────────
 def criterio_parada(x_nuevo, x_anterior, tolerancia):
-    """
-    Retorna True si el error de aproximación es menor que la tolerancia.
-    Retorna False si el método debe seguir iterando.
-
-    Usa error_aproximacion() internamente.
-    """
-    pass  # TODO
-
-
+    return error_aproximacion(x_nuevo, x_anterior) < tolerancia
 # ─────────────────────────────────────────────
 # TODO 6: Cifras significativas
 # ─────────────────────────────────────────────
 def cifras_significativas(valor, n):
-    """
-    Redondea 'valor' a n cifras significativas.
-    Ejemplo: cifras_significativas(0.001234, 3) → 0.00123
-    Pista: usar round(valor, n - 1 - int(floor(log10(abs(valor)))))
-    """
-    pass  # TODO
-
-
+    if valor == 0:
+        return 0
+    return round(valor, n - 1 - int(floor(log10(abs(valor)))))
 # ─────────────────────────────────────────────
 # PROGRAMA PRINCIPAL — Prueba de las funciones
 # ─────────────────────────────────────────────
