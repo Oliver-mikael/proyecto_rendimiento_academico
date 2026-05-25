@@ -27,31 +27,17 @@ FECHA     : [Fecha]
 
 import numpy as np
 from u1_errores import error_aproximacion, criterio_parada
+import matplotlib.pyplot as plt
 
 # ─────────────────────────────────────────────
 # FUNCIÓN OBJETIVO DEL PROYECTO
 # (viene de u7_minimos_cuadrados.py — por ahora usamos coeficientes fijos)
 # ─────────────────────────────────────────────
 def modelo_nota(horas, beta0, beta1, beta2, asistencia_fija):
-    """
-    Modelo lineal de predicción de nota.
-    nota = beta0 + beta1*horas + beta2*asistencia_fija
-
-    beta0, beta1, beta2 vendrán de la regresión (u7_minimos_cuadrados.py)
-    Por ahora usar valores de prueba: beta0=21, beta1=2, beta2=30
-    """
     return beta0 + beta1 * horas + beta2 * asistencia_fija
 
-
 def f_objetivo(horas, beta0, beta1, beta2, asistencia_fija, nota_objetivo=51):
-    """
-    Función cuya raíz queremos encontrar.
-    f(horas) = modelo_nota(horas) - nota_objetivo
-
-    Cuando f(horas) = 0 → encontramos las horas exactas para aprobar.
-    """
     return modelo_nota(horas, beta0, beta1, beta2, asistencia_fija) - nota_objetivo
-
 
 def df_objetivo(beta1):
     """
@@ -83,9 +69,28 @@ def biseccion(f, a, b, args, tolerancia=1e-5, max_iter=100):
 
     La tabla de iteraciones es IMPORTANTE para mostrar en el informe.
     """
-    pass  # TODO
-
-
+    fa = f(a, *args)
+    fb = f(b, *args)
+    if fa * fb >= 0:
+        raise ValueError("No hay cambio de intervalo en el intervalo.")
+    tabla = []
+    c_anterior = a
+    for iteracion in range(1, max_iter + 1):
+        c = (a + b) / 2
+        fc = f(c, *args)
+        error = error_aproximacion(c, c_anterior)
+        tabla.append([iteracion, a, b, c, fc, error])
+        if criterio_parada(c, c_anterior, tolerancia):
+            return c, tabla
+        if fa * fc < 0:
+            b = c
+            fb = fc
+        else:
+            a = c
+            fa = fc
+        c_anterior = c
+    print("Bisección : se alcanzo el máximo de iteraciones")
+    return c, tabla
 # ─────────────────────────────────────────────
 # TODO 2: Método de Newton-Raphson
 # ─────────────────────────────────────────────
@@ -107,8 +112,20 @@ def newton_raphson(f, df, x0, args, tolerancia=1e-5, max_iter=100):
        g. x = x_nuevo
     4. Retornar (x, tabla_iteraciones)
     """
-    pass  # TODO
-
+    x = x0
+    tabla = []
+    for iteracion in range(1, max_iter + 1):
+        fx = f(x, *args)
+        dfx = df(*args)
+        if dfx == 0:
+            break
+        x_nuevo = x - fx / dfx
+        error = error_aproximacion(x, x_nuevo)
+        tabla.append([iteracion, x, fx, error])
+        if criterio_parada(x, x_nuevo, tolerancia):
+            return x_nuevo, tabla
+        x = x_nuevo
+    return x, tabla
 
 # ─────────────────────────────────────────────
 # TODO 3: Comparar ambos métodos y graficar
@@ -120,9 +137,22 @@ def graficar_convergencia(tabla_biseccion, tabla_newton):
 
     Usar matplotlib. Guardar en: ../resultados/graficos/u2_convergencia.png
     """
-    pass  # TODO
-
-
+    iter_b = [fila[0] for fila in tabla_biseccion]
+    err_b     = [fila[5] for fila in tabla_biseccion]  # columna 5 en bisección
+    
+    iter_n = [fila[0] for fila in tabla_newton]
+    err_n     = [fila[3] for fila in tabla_newton]  # columna 3 en newton
+            
+    plt.figure()
+    plt.plot(iter_b, err_b, label='Bisección')
+    plt.plot(iter_n, err_n, label='Newton')
+    plt.xlabel('Iteración')
+    plt.ylabel('Error')
+    plt.title('Convergencia: Bisección vs Newton')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('../resultados/graficos/u2_convergencia.png')
+    plt.show()
 # ─────────────────────────────────────────────
 # PROGRAMA PRINCIPAL
 # ─────────────────────────────────────────────
@@ -135,13 +165,21 @@ if __name__ == "__main__":
     nota_objetivo   = 51     # nota mínima para aprobar
 
     args = (beta0, beta1, beta2, asistencia_fija, nota_objetivo)
-
+    horas_b, tabla_b = biseccion(f_objetivo, 0, 30, args)
+    horas_n, tabla_n = newton_raphson(f_objetivo, df_objetivo, 10, args)
     # TODO: llamar a biseccion() con intervalo [0, 30]
+    print("\nTABLA BISECCIÓN...")
+    for fila in tabla_b:
+        print(f"  iter {fila[0]}: c={fila[3]:.4f}  error={fila[5]}")
     # TODO: llamar a newton_raphson() con x0 = 10
+    print("\nTABLA NEWTON...")
+    for fila in tabla_n:
+        print(f"  iter {fila[0]}: c={fila[1]:.4f}  error={fila[3]}")
     # TODO: imprimir tablas de iteraciones
     # TODO: comparar resultados y número de iteraciones
     # TODO: llamar a graficar_convergencia()
-
+    print("\nGRÁFICA DE CONVERGENCIA...")
+    grafico = graficar_convergencia(tabla_b, tabla_n)
     print("\nPREGUNTA RESUELTA:")
     print(f"Con {asistencia_fija*100:.0f}% de asistencia,")
-    print(f"se necesitan ≈ X horas semanales para aprobar con nota {nota_objetivo}.")
+    print(f"se necesitan ≈ {horas_b:.2f} horas semanales para aprobar.")
